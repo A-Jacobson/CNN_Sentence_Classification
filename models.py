@@ -19,14 +19,14 @@ class MultiKernelConv(nn.Module):
 
 
 class SimpleCNN_Rand(nn.Module):
-    def __init__(self, vocab_size, embedding_dim):
+    def __init__(self, vocab_size, embedding_dim, maxlen):
         super(SimpleCNN_Rand, self).__init__()
-        self.embedding = nn.Embedding(vocab_size, embedding_dim, padding_idx=0)
-        self.conv = MultiKernelConv(embedding_dim, 36)
+        self.embedding = nn.Embedding(vocab_size+2, embedding_dim, padding_idx=0)
+        self.conv = MultiKernelConv(embedding_dim, 24)
         self.pool = nn.MaxPool1d(2)
-        self.fc = nn.Linear(36 * 52, 512)
+        self.fc = nn.Linear(24 * maxlen//2, 32)
         self.dropout = nn.Dropout()
-        self.output = nn.Linear(512, 2)
+        self.output = nn.Linear(32, 2)
 
     def forward(self, x):
         x = self.embedding(x)  # N, word, channel (32, 104, 50)

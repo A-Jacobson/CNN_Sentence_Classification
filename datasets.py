@@ -6,13 +6,20 @@ import numpy as np
 
 class SubjObjDataset(Dataset):
 
-    def __init__(self, path, vectorizer, tokenizer=None):
+    def __init__(self, path, vectorizer, tokenizer=None, stopwords=None):
         self.corpus = pd.read_csv(path)
         self.tokenizer = tokenizer
         self.vectorizer = vectorizer
+        self.stopwords = stopwords
         self.class2idx = {cls: idx for idx, cls in enumerate(sorted(np.unique(self.corpus['labels'])))}
         self._tokenize_corpus()
+        if self.stopwords:
+            self._remove_stopwords()
         self._vectorize_corpus()
+
+    def _remove_stopwords(self):
+        stopfilter = lambda doc: [word for word in doc if word not in self.stopwords]
+        self.corpus['tokens'] = self.corpus['tokens'].apply(stopfilter)
 
     def _tokenize_corpus(self):
         if self.tokenizer:

@@ -29,7 +29,9 @@ class IndexVectorizer:
             vocabulary = {word: freq for word, freq in vocabulary.items()
                           if freq >= self.min_frequency}
         self.vocabulary = vocabulary
-        self.vocabulary_size = len(vocabulary)
+        self.vocabulary_size = len(vocabulary) + 2  # padding and unk tokens
+        if self.start_end_tokens:
+            self.vocabulary_size += 2
 
     def _build_word_index(self):
         self.word2idx['<PAD>'] = 0

@@ -1,7 +1,7 @@
 from collections import defaultdict
 from shutil import copyfile
 
-from tqdm import tqdm
+from tqdm import tqdm_notebook
 import torch
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
@@ -40,6 +40,7 @@ def do_clip(arr, mx):
     clipped = np.clip(arr, (1 - mx) / 1, mx)
     return clipped / clipped.sum(axis=1)[:, np.newaxis]
 
+
 def binary_accuracy(y_true, y_pred):
     y_pred = y_pred.float()
     y_true = y_true.float()
@@ -51,14 +52,15 @@ def categorical_accuracy(y_true, y_pred):
     _, y_pred = torch.max(y_pred, dim=-1)
     return (y_pred.float() == y_true).float().mean()
 
+
 def _fit_epoch(model, data, criterion, optimizer, batch_size, shuffle):
     model.train()
     running_loss = AverageMeter()
     running_accuracy = AverageMeter()
     loader = DataLoader(data, batch_size, shuffle)
-    t = tqdm(loader, total=len(loader))
+    t = tqdm_notebook(loader, total=len(loader))
     for data, target in t:
-        data, target = Variable(data.cuda()), Variable(target.cuda())
+        data, target = Variable(data.cuda()), Variable(target.cuda().squeeze())
         output = model(data)
         loss = criterion(output, target)
         accuracy = categorical_accuracy(target.data, output.data)
@@ -82,7 +84,7 @@ def fit(model, train, criterion, optimizer, batch_size=32,
         print('Train on {} samples'.format(len(train)))
 
     history = defaultdict(list)
-    t = tqdm(range(nb_epoch), total=nb_epoch)
+    t = tqdm_notebook(range(nb_epoch), total=nb_epoch)
     for epoch in t:
         loss, acc = _fit_epoch(model, train, criterion,
                               optimizer, batch_size, shuffle)
@@ -109,7 +111,7 @@ def validate(model, validation_data, criterion, batch_size):
     val_accuracy = AverageMeter()
     loader = DataLoader(validation_data, batch_size=batch_size, shuffle=True)
     for data, target in loader:
-        data, target = Variable(data.cuda()), Variable(target.cuda())
+        data, target = Variable(data.cuda()), Variable(target.cuda().squeeze())
         output = model(data)
         loss = criterion(output, target)
         accuracy = categorical_accuracy(target.data, output.data)
@@ -122,7 +124,7 @@ def predict(model, data, batch_size):
     model.eval()
     predictions = []
     loader = DataLoader(data, batch_size=batch_size, shuffle=False)
-    for data, _ in tqdm(loader, total=len(loader)):
+    for data, _ in tqdm_notebook(loader, total=len(loader)):
         data = Variable(data.cuda())
         output = model(data).data
         for prediction in output:
@@ -134,7 +136,7 @@ def predict_labels(model, data, batch_size):
     model.eval()
     labels = []
     loader = DataLoader(data, batch_size=batch_size, shuffle=False)
-    for data, _ in tqdm(loader, total=len(loader)):
+    for data, _ in tqdm_notebook(loader, total=len(loader)):
         data = Variable(data.cuda())
         _, output = torch.max(model(data).data, dim=-1)
         for label in output:
