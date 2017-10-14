@@ -41,8 +41,9 @@ class IndexVectorizer:
             self.word2idx['<START>'] = 2
             self.word2idx['<END>'] = 3
 
-        self.word2idx = {word: idx + len(self.word2idx) for idx,
-                         word in enumerate(self.vocabulary)}
+        offset = len(self.word2idx)
+        for idx, word in enumerate(self.vocabulary):
+            self.word2idx[word] = idx + offset
         self.idx2word = {idx: word for word, idx in self.word2idx.items()}
 
     def fit(self, corpus):
@@ -53,12 +54,12 @@ class IndexVectorizer:
 
     def pad_document_vector(self, vector):
         padding = self.maxlen - len(vector)
-        vector.extend([1] * padding)
+        vector.extend([self.word2idx['<PAD>']] * padding)
         return vector
 
     def add_start_end(self, vector):
-        vector.append(3)
-        return [2] + vector
+        vector.append(self.word2idx['<END>'])
+        return [self.word2idx['<START>']] + vector
 
     def transform_document(self, document):
         """
