@@ -18,10 +18,15 @@ class MultiKernelConv(nn.Module):
         return torch.cat([f1, f2, f3], dim=1)
 
 
-class SimpleCNN_Rand(nn.Module):
-    def __init__(self, vocab_size, embedding_dim, maxlen):
-        super(SimpleCNN_Rand, self).__init__()
-        self.embedding = nn.Embedding(vocab_size+2, embedding_dim, padding_idx=0)
+class TextCNN(nn.Module):
+    def __init__(self, vocab_size, embedding_dim, maxlen,
+                 embeddings=None, freeze_embeddings=False):
+        super(TextCNN, self).__init__()
+        self.embedding = nn.Embedding(vocab_size, embedding_dim, padding_idx=0)
+        if embeddings is not None:
+            self.embedding.weight = nn.Parameter(embeddings)
+        if freeze_embeddings:
+            self.embedding.weight.requires_grad = False
         self.conv = MultiKernelConv(embedding_dim, 24)
         self.pool = nn.MaxPool1d(2)
         self.fc = nn.Linear(24 * maxlen//2, 32)

@@ -1,4 +1,4 @@
-# CNN_Sentence_Classification
+# CNN Sentence Classification
 pytorch Convolutional Networks for Sentence Classification - http://www.aclweb.org/anthology/D14-1181
 
 - [x] Subjective/Objective Data Loader
@@ -6,5 +6,6 @@ pytorch Convolutional Networks for Sentence Classification - http://www.aclweb.o
 - [ ] Question Classification Loader http://cogcomp.org/Data/QA/QC/
 - [x] 1-D cnn Architecture
 - [ ] Incorporate adjustments from https://arxiv.org/pdf/1510.03820.pdf
-- [ ] Initialize with Pre-trained Word Vectors
-- [ ] Evaluate
+- [x] Initialize with Pre-trained Word Vectors
+- [x] Evaluate - Achieves 91.63 accuracy on subj/obj with glove vectors
+

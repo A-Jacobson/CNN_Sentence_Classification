@@ -1,0 +1,4 @@
+pandas==0.20.1
+torch==0.2.0.post4
+numpy==1.12.1
+tqdm==4.19.2
